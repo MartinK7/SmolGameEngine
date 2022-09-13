@@ -16,3 +16,11 @@ cmake ..
 cmake --build .
 ./SGE_Demo
 ```
+
+## How to play demo
+- `W`, `A`, `S`, `D` - move
+- `LSHIFT` - up
+- `SPACE` - down
+- `LCTRL+ANY_KEY_ABOVE` - speed boost
+
+
