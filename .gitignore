@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# Hidden items
+.*
+cmake-*
+build
+
+# Blender files
+*.blend1
