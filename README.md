@@ -6,7 +6,7 @@ Unfinished game engine with some limitations.
 - Textures
 
 ## Screenshot of SGE_Demo
-![Screenshot of SGE_Demo](demo/assets/screenshots/Screenshot from 2022-09-13 18-15-33.png)
+![Screenshot of SGE_Demo](demo/assets/screenshots/Screenshot_from_2022-09-13_18-15-33.png)
 
 ## How to build
 ```console
