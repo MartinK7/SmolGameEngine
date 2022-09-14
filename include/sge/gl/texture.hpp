@@ -7,16 +7,16 @@
 namespace GL {
 	extern GLuint GL_state_textures[32];
 
-	typedef enum {
-		TEXTURE_TYPE_2D,
-		TEXTURE_TYPE_CUBEMAP
-	} texture_type_e;
+	enum class TextureType {
+		T2D,
+		CUBEMAP
+	};
 
 	class Texture {
 		GLuint ID_texture = 0;
 		GLsizei width = 0;
 		GLsizei height = 0;
-		texture_type_e type = TEXTURE_TYPE_2D;
+		TextureType type = TextureType::T2D;
 
 	public:
 		~Texture();

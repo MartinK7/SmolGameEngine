@@ -7,18 +7,18 @@
 
 namespace GL {
 
-	typedef enum {
-		FRAMEBUFFER_TEXTURE_2D_DEPTHMAP,
-		FRAMEBUFFER_TEXTURE_CUBEMAP_DEPTHMAP,
-		FRAMEBUFFER_TEXTURE_2D_COLOR,
-		FRAMEBUFFER_TEXTURE_CUBEMAP_COLOR
-	} framebuffer_type_e;
+	enum class FramebufferType {
+		T2D_DEPTHMAP,
+		CUBEMAP_DEPTHMAP,
+		T2D_COLOR,
+		CUBEMAP_COLOR
+	};
 
 	class Framebuffer {
 		GLuint ID_fbo = 0;
 		GL::Texture textureColor;
 		GL::Texture textureDepth;
-		framebuffer_type_e type = FRAMEBUFFER_TEXTURE_2D_COLOR;
+		FramebufferType type = FramebufferType::T2D_COLOR;
 
 	public:
 		~Framebuffer();

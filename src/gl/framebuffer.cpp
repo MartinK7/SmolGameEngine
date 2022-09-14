@@ -15,7 +15,7 @@ void GL::Framebuffer::createFramebufferDepthmap(GLsizei width, GLsizei height) {
 
 	// Create empty texture
 	textureDepth.createFromMemory(nullptr, width, height, 1);
-	type = FRAMEBUFFER_TEXTURE_2D_DEPTHMAP;
+	type = FramebufferType::T2D_DEPTHMAP;
 }
 
 void GL::Framebuffer::createFramebufferCubemapDepthmap(GLsizei width, GLsizei height) {
@@ -26,7 +26,7 @@ void GL::Framebuffer::createFramebufferCubemapDepthmap(GLsizei width, GLsizei he
 	// Create empty cubemap texture
 	bind();
 	textureDepth.createCubemapFromMemory(nullptr, width, height, 1);
-	type = FRAMEBUFFER_TEXTURE_CUBEMAP_DEPTHMAP;
+	type = FramebufferType::CUBEMAP_DEPTHMAP;
 }
 
 void GL::Framebuffer::createFramebuffer(GLsizei width, GLsizei height) {
@@ -37,7 +37,7 @@ void GL::Framebuffer::createFramebuffer(GLsizei width, GLsizei height) {
 	// Create empty texture
 	textureColor.createFromMemory(nullptr, width, height, 3);
 	textureDepth.createFromMemory(nullptr, width, height, 1);
-	type = FRAMEBUFFER_TEXTURE_2D_COLOR;
+	type = FramebufferType::T2D_COLOR;
 }
 
 void GL::Framebuffer::createFramebufferCubemap(GLsizei width, GLsizei height) {
@@ -48,25 +48,25 @@ void GL::Framebuffer::createFramebufferCubemap(GLsizei width, GLsizei height) {
 	// Create empty cubemap texture
 	textureColor.createCubemapFromMemory(nullptr, width, height, 3);
 	textureDepth.createCubemapFromMemory(nullptr, width, height, 1);
-	type = FRAMEBUFFER_TEXTURE_CUBEMAP_COLOR;
+	type = FramebufferType::CUBEMAP_COLOR;
 }
 
 void GL::Framebuffer::setViewPort(int face) {
 	bind();
 	switch(type) {
-		case FRAMEBUFFER_TEXTURE_2D_DEPTHMAP:
+		case FramebufferType::T2D_DEPTHMAP:
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureDepth.getIdTexture(), 0);
 			glDrawBuffer(GL_NONE);
 			break;
-		case FRAMEBUFFER_TEXTURE_CUBEMAP_DEPTHMAP:
+		case FramebufferType::CUBEMAP_DEPTHMAP:
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, textureDepth.getIdTexture(), 0);
 			glDrawBuffer(GL_NONE);
 			break;
-		case FRAMEBUFFER_TEXTURE_2D_COLOR:
+		case FramebufferType::T2D_COLOR:
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColor.getIdTexture(), 0);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureDepth.getIdTexture(), 0);
 			break;
-		case FRAMEBUFFER_TEXTURE_CUBEMAP_COLOR:
+		case FramebufferType::CUBEMAP_COLOR:
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, textureColor.getIdTexture(), 0);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, textureDepth.getIdTexture(), 0);
 			break;

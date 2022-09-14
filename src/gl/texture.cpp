@@ -38,7 +38,7 @@ namespace GL {
 				return;//error
 		}
 
-		type = TEXTURE_TYPE_2D;
+		type = TextureType::T2D;
 
 		this->width = width;
 		this->height = height;
@@ -114,7 +114,7 @@ namespace GL {
 				return;//error
 		}
 
-		type = TEXTURE_TYPE_CUBEMAP;
+		type = TextureType::CUBEMAP;
 
 		this->width = width;
 		this->height = height;
@@ -166,7 +166,7 @@ namespace GL {
 		if(GL_state_textures[layer] != ID_texture) {
 #endif
 			glActiveTexture(GL_TEXTURE0 + layer);
-			glBindTexture(type == TEXTURE_TYPE_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, ID_texture);
+			glBindTexture(type == TextureType::T2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, ID_texture);
 #if OPTIMIZE
 			GL_state_textures[layer] = ID_texture;
 		}
@@ -179,7 +179,7 @@ namespace GL {
 		if(GL_state_textures[layer] == ID_texture) {
 #endif
 			glActiveTexture(GL_TEXTURE0 + layer);
-			glBindTexture(type == TEXTURE_TYPE_2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, 0);
+			glBindTexture(type == TextureType::T2D ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, 0);
 #if OPTIMIZE
 			GL_state_textures[layer] = 0;
 		}
