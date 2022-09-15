@@ -2,7 +2,7 @@
 #ifndef SGE_SGE_HPP
 #define SGE_SGE_HPP
 
-#include "types.hpp"
+#include "vertex.hpp"
 #include "model.hpp"
 #include "camera.hpp"
 #include "affine.hpp"

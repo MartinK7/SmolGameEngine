@@ -11,7 +11,10 @@ namespace SGE {
 	class BMaterial {
 		glm::vec3 colorAlbedo = glm::vec3(0.5);
 		std::shared_ptr<GL::Texture> textureAlbedo;
+		std::shared_ptr<GL::Texture> textureHeight;
 		std::shared_ptr<GL::Texture> textureNormal;
+		std::shared_ptr<GL::Texture> textureRoughness;
+		std::shared_ptr<GL::Texture> textureAmbientOcclusion;
 		float mixColorTextureAlbedo = 0.0f;
 		float glossy = 0.0f;
 

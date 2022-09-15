@@ -20,7 +20,7 @@ class OBJobject {
 };
 
 void SGE::Model::createFromOBJ(std::string objFullPath) {
-	std::vector<SGE::VertexLSTN> triangles;
+	std::vector<SGE::Vertex> triangles;
 
 	std::ifstream ifs;
 	ifs.open(objFullPath, std::ifstream::in);
@@ -75,7 +75,7 @@ void SGE::Model::createFromOBJ(std::string objFullPath) {
 	// REORDER DATA
 	for(auto face : object.faces) {
 		for (uint8_t faceIndex = 0; faceIndex < 3; ++faceIndex) {
-			SGE::VertexLSTN vertex(
+			SGE::Vertex vertex(
 				object.vertices[face.index_vertex[faceIndex]].x,
 				object.vertices[face.index_vertex[faceIndex]].y,
 				object.vertices[face.index_vertex[faceIndex]].z,
@@ -94,55 +94,55 @@ void SGE::Model::createFromOBJ(std::string objFullPath) {
 	vao.addAttributes({GL::VAO::Vec3f, GL::VAO::Vec2f, GL::VAO::Vec3f});
 }
 
-void SGE::Model::createMesh(std::vector<SGE::VertexLSTN> &vertices_triangles) {
+void SGE::Model::createMesh(std::vector<SGE::Vertex> &vertices_triangles) {
 	vao.createArray();
 	vbo.createBufferData(vertices_triangles, GL::VBO::ArrayBuffer);
 	vao.addAttributes({GL::VAO::Vec3f, GL::VAO::Vec3f});
 }
 
 void SGE::Model::createCube() {
-	std::vector<SGE::VertexLSTN> triangles({
-		SGE::VertexLSTN(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f),
-		SGE::VertexLSTN(1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f),
-		SGE::VertexLSTN(1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f),
-		SGE::VertexLSTN(1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f),
-		SGE::VertexLSTN(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f),
-		SGE::VertexLSTN(-1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f),
+	std::vector<SGE::Vertex> triangles({
+		SGE::Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f),
+		SGE::Vertex(1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f),
+		SGE::Vertex(1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f),
+		SGE::Vertex(1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f),
+		SGE::Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f),
+		SGE::Vertex(-1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f),
 
-		SGE::VertexLSTN(-1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f),
-		SGE::VertexLSTN(1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f),
-		SGE::VertexLSTN(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f),
-		SGE::VertexLSTN(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f),
-		SGE::VertexLSTN(-1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f),
-		SGE::VertexLSTN(-1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f),
+		SGE::Vertex(-1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f),
+		SGE::Vertex(1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f),
+		SGE::Vertex(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f),
+		SGE::Vertex(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f),
+		SGE::Vertex(-1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f),
+		SGE::Vertex(-1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f),
 
-		SGE::VertexLSTN(-1.0f, 1.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(-1.0f, -1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(-1.0f, 1.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f),
+		SGE::Vertex(-1.0f, 1.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f),
+		SGE::Vertex(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f),
+		SGE::Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f),
+		SGE::Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f),
+		SGE::Vertex(-1.0f, -1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f),
+		SGE::Vertex(-1.0f, 1.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f),
 
-		SGE::VertexLSTN(1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f),
+		SGE::Vertex(1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f),
+		SGE::Vertex(1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f),
+		SGE::Vertex(1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f),
+		SGE::Vertex(1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f),
+		SGE::Vertex(1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f),
+		SGE::Vertex(1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f),
 
-		SGE::VertexLSTN(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f),
-		SGE::VertexLSTN(-1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f),
-		SGE::VertexLSTN(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f),
+		SGE::Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f),
+		SGE::Vertex(1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f),
+		SGE::Vertex(1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f),
+		SGE::Vertex(1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f),
+		SGE::Vertex(-1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f),
+		SGE::Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f),
 
-		SGE::VertexLSTN(-1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f),
-		SGE::VertexLSTN(-1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f),
-		SGE::VertexLSTN(-1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f),
+		SGE::Vertex(-1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f),
+		SGE::Vertex(1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f),
+		SGE::Vertex(1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f),
+		SGE::Vertex(1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f),
+		SGE::Vertex(-1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f),
+		SGE::Vertex(-1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f),
 	});
 	vao.createArray();
 	vbo.createBufferData(triangles, GL::VBO::ArrayBuffer);
@@ -166,13 +166,13 @@ void SGE::Model::draw() {
 }
 
 void SGE::Model::createPlane() {
-	std::vector<SGE::VertexLSTN> triangles({
-		SGE::VertexLSTN(-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f),
-		SGE::VertexLSTN(-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f),
+	std::vector<SGE::Vertex> triangles({
+		SGE::Vertex(-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f),
+		SGE::Vertex(1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f),
+		SGE::Vertex(1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f),
+		SGE::Vertex(1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f),
+		SGE::Vertex(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f),
+		SGE::Vertex(-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f),
 	});
 	vao.createArray();
 	vbo.createBufferData(triangles, GL::VBO::ArrayBuffer);
@@ -180,7 +180,7 @@ void SGE::Model::createPlane() {
 }
 
 void SGE::Model::createSphere(GLint sectorCount, GLint stackCount) {
-	std::vector<SGE::VertexLSTN> triangles;
+	std::vector<SGE::Vertex> triangles;
 	std::vector<GLuint> indices;
 
 	// This algorithm implementation is from:

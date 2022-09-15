@@ -6,13 +6,13 @@
 #include <memory>
 
 #include "../gl/gl.hpp"
-#include "types.hpp"
+#include "vertex.hpp"
 #include "affine.hpp"
 
 namespace SGE {
 		class Model {
 			GL::VertexArrayObject vao;
-			GL::VertexBufferObject<SGE::VertexLSTN> vbo;
+			GL::VertexBufferObject<SGE::Vertex> vbo;
 			GL::VertexBufferObject<GLuint> ebo;
 			GL::VertexBufferObject<SGE::Affine> ibo;
 
@@ -21,7 +21,7 @@ namespace SGE {
 			void createCube();
 			void createPlane();
 			void createSphere(GLint sectorCount = 16, GLint stackCount = 16);
-			void createMesh(std::vector<SGE::VertexLSTN> &vertices_triangles);
+			void createMesh(std::vector<SGE::Vertex> &vertices_triangles);
 			void draw();
 			void setIndices(std::vector<SGE::Affine> &indices);
 		};
