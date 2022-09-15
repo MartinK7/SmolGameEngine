@@ -5,6 +5,7 @@
 #include <fstream>
 #include "sge/base/sge.hpp"
 #include "demo.hpp"
+#include "player.hpp"
 
 #define PATH "../demo/assets"
 
@@ -14,11 +15,10 @@ namespace Game {
 		return glm::vec3(vec.x, vec.z, -vec.y);
 	}
 
+	static Game::Player player;
+
 	static GL::Texture cubemapBackground;
 	static GL::Program programBMaterial, programBackground, programBright, programBDepth;
-
-	static SGE::Camera cameraPlayer;
-	static glm::vec2 cameraPlayerAzimuthAltitude(214.0f, -9.0);
 
 	static SGE::Model modelCube;
 
@@ -151,15 +151,11 @@ namespace Game {
 			programBackground.setInt("cubemapBackground", 20);
 			programBMaterial.setInt("sge_pointLight.cubemapDepthmap", 10);
 			programBMaterial.setInt("sge_material.cubemapEnvironment", 21);
-
-			cameraPlayer.setPosition(fromBlender({-3.77249f, 6.23212f, 1.99697f}));
 		}
 
 		// Player camera
-		programBMaterial.setMat4f("matrixCamera", cameraPlayer.getTransformMatrix());
-		programBMaterial.setVec3f("cameraPosition", cameraPlayer.getPosition());
-		//
-		programBright.setMat4f("matrixCamera", cameraPlayer.getTransformMatrix());
+		player.setUniforms(programBMaterial);
+		player.setUniforms(programBright);
 
 		// Lights
 		programBMaterial.setVec3f("sge_pointLight.position", lightPointPosition);
@@ -176,7 +172,7 @@ namespace Game {
 		glCullFace(GL_FRONT);
 
 		// Place temporary player camera inside cube and keep same rotation
-		SGE::Camera cameraCubemap(window.getRatio(), glm::vec3(0.0f), glm::normalize(cameraPlayer.getLookAt() - cameraPlayer.getPosition()));
+		SGE::Camera cameraCubemap(window.getRatio(), glm::vec3(0.0f), player.getRotationVector());
 		programBackground.setMat4f("matrixCamera", cameraCubemap.getTransformMatrix());
 
 		// Draw simple cube which fills user view
@@ -188,55 +184,7 @@ namespace Game {
 	}
 
 	static void updatePlayer(GL::Window &window) {
-		float speedMax = 0.02f;
-		float rotationSpeed = 0.3f;
-
-		cameraPlayerAzimuthAltitude -= rotationSpeed * window.getMouseDelta();
-		while(cameraPlayerAzimuthAltitude.x > 360.0f) { cameraPlayerAzimuthAltitude.x -= 360.0f; }
-		while(cameraPlayerAzimuthAltitude.x < -360.0f) { cameraPlayerAzimuthAltitude.x += 360.0f; }
-		if(cameraPlayerAzimuthAltitude.y > 89.5f) { cameraPlayerAzimuthAltitude.y = 89.5f; }
-		if(cameraPlayerAzimuthAltitude.y < -89.5f) { cameraPlayerAzimuthAltitude.y = -89.5f; }
-
-		glm::vec4 dirForwardAzimuth(0.0f, 0.0f, -1.0f, 1.0f);
-		glm::vec4 dirForwardAzimuthAltitude = dirForwardAzimuth;
-		glm::vec4 dirRight(1.0f, 0.0f, 0.0f, 1.0f);
-		glm::vec4 dirUp(0.0f, 1.0f, 0.0f, 1.0f);
-		glm::mat4 matrixAzimuth = glm::rotate(glm::mat4(1.0f), glm::radians((float)cameraPlayerAzimuthAltitude.x), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 matrixAltitude = glm::rotate(matrixAzimuth, glm::radians((float)cameraPlayerAzimuthAltitude.y), glm::vec3(1.0f, 0.0f, 0.0f));
-		dirForwardAzimuth = matrixAzimuth * dirForwardAzimuth;
-		dirForwardAzimuthAltitude = matrixAltitude * dirForwardAzimuthAltitude;
-		dirRight = matrixAltitude * dirRight;
-
-		if(window.isKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
-			speedMax *= 3.0f;
-		}
-
-		if(window.isKeyPressed(GLFW_KEY_W)) {
-			cameraPlayer.setPosition(cameraPlayer.getPosition() + speedMax * glm::vec3(dirForwardAzimuth));
-		}
-
-		if(window.isKeyPressed(GLFW_KEY_S)) {
-			cameraPlayer.setPosition(cameraPlayer.getPosition() - speedMax * glm::vec3(dirForwardAzimuth));
-		}
-
-		if(window.isKeyPressed(GLFW_KEY_A)) {
-			cameraPlayer.setPosition(cameraPlayer.getPosition() - speedMax * glm::vec3(dirRight));
-		}
-
-		if(window.isKeyPressed(GLFW_KEY_D)) {
-			cameraPlayer.setPosition(cameraPlayer.getPosition() + speedMax * glm::vec3(dirRight));
-		}
-
-		if(window.isKeyPressed(GLFW_KEY_SPACE)) {
-			cameraPlayer.setPosition(cameraPlayer.getPosition() + speedMax * glm::vec3(dirUp));
-		}
-
-		if(window.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-			cameraPlayer.setPosition(cameraPlayer.getPosition() - speedMax * glm::vec3(dirUp));
-		}
-
-		cameraPlayer.setAspectRatio(window.getRatio());
-		cameraPlayer.setLookAt(cameraPlayer.getPosition() + glm::vec3(dirForwardAzimuthAltitude));
+		player.update(window);
 	}
 
 	static void Start() {
@@ -306,7 +254,7 @@ namespace Game {
 					SGE::Affine transform;
 					transform.reset();
 					transform.setScale(glm::vec3(0.1f));
-					transform.setPosition(cameraPlayer.getPosition());
+					transform.setPosition(player.getPosition());
 					programBDepth.setMat4f("matrixModel", transform.getTransformMatrix());
 					modelCube.draw();
 				}
@@ -346,7 +294,7 @@ namespace Game {
 						SGE::Affine transform;
 						transform.reset();
 						transform.setScale(glm::vec3(0.1f));
-						transform.setPosition(cameraPlayer.getPosition());
+						transform.setPosition(player.getPosition());
 						programBMaterial.setMat4f("matrixModel", transform.getTransformMatrix());
 						mat.setUniforms(programBMaterial);
 						modelCube.draw();
@@ -365,7 +313,7 @@ namespace Game {
 
 			#if 1
 			// Objects in scene
-			programBMaterial.setMat4f("matrixCamera", cameraPlayer.getTransformMatrix());
+			player.setUniforms(programBMaterial);
 			for(auto &o : gameObjects) {
 				if(o.second.bmaterial) {
 					o.second.bmaterial->setUniforms(programBMaterial);
