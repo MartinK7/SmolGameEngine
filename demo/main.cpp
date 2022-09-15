@@ -6,6 +6,7 @@
 #include "sge/base/sge.hpp"
 #include "demo.hpp"
 #include "player.hpp"
+#include "background.hpp"
 
 #define PATH "../demo/assets"
 
@@ -15,12 +16,7 @@ namespace Game {
 		return glm::vec3(vec.x, vec.z, -vec.y);
 	}
 
-	static Game::Player player;
-
-	static GL::Texture cubemapBackground;
-	static GL::Program programBMaterial, programBackground, programBright, programBDepth;
-
-	static SGE::Model modelCube;
+	static GL::Program programBMaterial, programBright, programBDepth;
 
 	static std::map<std::string, SGE::GameObject> gameObjects;
 	static glm::vec3 lightPointPosition = fromBlender({-5.42395f, -3.00282f, 3.03571f});
@@ -41,18 +37,9 @@ namespace Game {
 
 		teapotCubemap.createFramebufferCubemap();
 		teapotCubemap.bindTextureColor(21);
-
-		const char *cubemapBackgroundFiles[] = {
-				PATH"/images/cubemaps/Maskonaive2/posx.jpg", PATH"/images/cubemaps/Maskonaive2/negx.jpg",
-				PATH"/images/cubemaps/Maskonaive2/posy.jpg", PATH"/images/cubemaps/Maskonaive2/negy.jpg",
-				PATH"/images/cubemaps/Maskonaive2/posz.jpg", PATH"/images/cubemaps/Maskonaive2/negz.jpg"
-		};
-		cubemapBackground.createCubemapFromFiles(cubemapBackgroundFiles);
-		cubemapBackground.bind(20);
 	}
 
 	static void loadModels() {
-		modelCube.createCube();
 
 		const char *models_names[] = {"boxes", "bulb", "light_frame", "floor", "walls", "vent", "vent_pipe", "vent_hold", "vent_prop", "teapot"};
 		for(auto &o : models_names) {
@@ -135,7 +122,6 @@ namespace Game {
 
 	static void loadPrograms() {
 		programBMaterial.createFromFile(PATH"/programs/bmaterial/bmaterial.vert", PATH"/programs/bmaterial/bmaterial.frag");
-		programBackground.createFromFile(PATH"/programs/background/background.vert", PATH"/programs/background/background.frag");
 		programBright.createFromFile(PATH"/programs/bright/bright.vert", PATH"/programs/bright/bright.frag");
 		programBDepth.createFromFile(PATH"/programs/bdepth/bdepth.vert", PATH"/programs/bdepth/bdepth.frag");
 	}
@@ -148,14 +134,10 @@ namespace Game {
 
 			// Bind uniform textures to layers
 			programBMaterial.setInt("cubemapBackground", 20);
-			programBackground.setInt("cubemapBackground", 20);
 			programBMaterial.setInt("sge_pointLight.cubemapDepthmap", 10);
 			programBMaterial.setInt("sge_material.cubemapEnvironment", 21);
 		}
 
-		// Player camera
-		player.setUniforms(programBMaterial);
-		player.setUniforms(programBright);
 
 		// Lights
 		programBMaterial.setVec3f("sge_pointLight.position", lightPointPosition);
@@ -165,32 +147,18 @@ namespace Game {
 		programBDepth.setVec3f("sge_pointLight.position", lightPointPosition);
 	}
 
-	static void drawSkybox(GL::Window &window) {
-		// Do not care about depth test and also invert face culling
-		// (the used model cube normals are directed outward we need them inwards)
-		glDisable(GL_DEPTH_TEST);
-		glCullFace(GL_FRONT);
-
-		// Place temporary player camera inside cube and keep same rotation
-		SGE::Camera cameraCubemap(window.getRatio(), glm::vec3(0.0f), player.getRotationVector());
-		programBackground.setMat4f("matrixCamera", cameraCubemap.getTransformMatrix());
-
-		// Draw simple cube which fills user view
-		modelCube.draw();
-
-		// Reset settings
-		glEnable(GL_DEPTH_TEST);
-		glCullFace(GL_BACK);
-	}
-
-	static void updatePlayer(GL::Window &window) {
-		player.update(window);
-	}
-
 	static void Start() {
 		GL::Window window;
 		window.create(640 * 2.5, 480 * 2);
-		//window.create(320, 240);
+
+		Game::Player player(fromBlender({-3.77249f, 6.23212f, 1.99697f}), glm::vec2(214.0f, -9.0));
+
+		const char *cubemapBackgroundFiles[6] = {
+				PATH"/images/cubemaps/Maskonaive2/posx.jpg", PATH"/images/cubemaps/Maskonaive2/negx.jpg",
+				PATH"/images/cubemaps/Maskonaive2/posy.jpg", PATH"/images/cubemaps/Maskonaive2/negy.jpg",
+				PATH"/images/cubemaps/Maskonaive2/posz.jpg", PATH"/images/cubemaps/Maskonaive2/negz.jpg"
+		};
+		Game::Background background(cubemapBackgroundFiles);
 
 		loadPrograms();
 		loadModels();
@@ -212,7 +180,10 @@ namespace Game {
 				lightPointPosition = glm::mix(lightPath[index], lightPath[index + 1], map(t, t0, t1, 0.0f, 1.0f));
 			}
 
-			updatePlayer(window);
+			// Player camera
+			player.update(window);
+			player.setUniforms(programBMaterial);
+			player.setUniforms(programBright);
 
 			updateProgramsUniforms(once);
 
@@ -256,6 +227,8 @@ namespace Game {
 					transform.setScale(glm::vec3(0.1f));
 					transform.setPosition(player.getPosition());
 					programBDepth.setMat4f("matrixModel", transform.getTransformMatrix());
+					SGE::Model modelCube;
+					modelCube.createCube();
 					modelCube.draw();
 				}
 				//glCullFace(GL_BACK);
@@ -297,6 +270,8 @@ namespace Game {
 						transform.setPosition(player.getPosition());
 						programBMaterial.setMat4f("matrixModel", transform.getTransformMatrix());
 						mat.setUniforms(programBMaterial);
+						SGE::Model modelCube;
+						modelCube.createCube();
 						modelCube.draw();
 					}
 				}
@@ -308,7 +283,7 @@ namespace Game {
 
 			// Draw background first
 			#if 1
-			drawSkybox(window);
+			background.draw(window, player);
 			#endif
 
 			#if 1
@@ -335,6 +310,8 @@ namespace Game {
 				transform.setScale(glm::vec3(0.01f));
 				transform.setPosition(lightPointPosition);
 				programBright.setMat4f("matrixModel", transform.getTransformMatrix());
+				SGE::Model modelCube;
+				modelCube.createCube();
 				modelCube.draw();
 			}
 			#endif

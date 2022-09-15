@@ -1,12 +1,9 @@
 
 #include "player.hpp"
 
-static glm::vec3 fromBlender(glm::vec3 vec) {
-	return glm::vec3(vec.x, vec.z, -vec.y);
-}
-
-Game::Player::Player() {
-	camera.setPosition(fromBlender({-3.77249f, 6.23212f, 1.99697f}));
+Game::Player::Player(glm::vec3 position, glm::vec2 azimuthAltitude) {
+	this->azimuthAltitude = azimuthAltitude;
+	camera.setPosition(position);
 }
 
 void Game::Player::setUniforms(GL::Program &targetProgram) {
@@ -18,18 +15,18 @@ void Game::Player::update(GL::Window &window) {
 	float speedMax = 0.02f;
 	float rotationSpeed = 0.3f;
 
-	cameraPlayerAzimuthAltitude -= rotationSpeed * window.getMouseDelta();
-	while(cameraPlayerAzimuthAltitude.x > 360.0f) { cameraPlayerAzimuthAltitude.x -= 360.0f; }
-	while(cameraPlayerAzimuthAltitude.x < -360.0f) { cameraPlayerAzimuthAltitude.x += 360.0f; }
-	if(cameraPlayerAzimuthAltitude.y > 89.5f) { cameraPlayerAzimuthAltitude.y = 89.5f; }
-	if(cameraPlayerAzimuthAltitude.y < -89.5f) { cameraPlayerAzimuthAltitude.y = -89.5f; }
+	azimuthAltitude -= rotationSpeed * window.getMouseDelta();
+	while(azimuthAltitude.x > 360.0f) { azimuthAltitude.x -= 360.0f; }
+	while(azimuthAltitude.x < -360.0f) { azimuthAltitude.x += 360.0f; }
+	if(azimuthAltitude.y > 89.5f) { azimuthAltitude.y = 89.5f; }
+	if(azimuthAltitude.y < -89.5f) { azimuthAltitude.y = -89.5f; }
 
 	glm::vec4 dirForwardAzimuth(0.0f, 0.0f, -1.0f, 1.0f);
 	glm::vec4 dirForwardAzimuthAltitude = dirForwardAzimuth;
 	glm::vec4 dirRight(1.0f, 0.0f, 0.0f, 1.0f);
 	glm::vec4 dirUp(0.0f, 1.0f, 0.0f, 1.0f);
-	glm::mat4 matrixAzimuth = glm::rotate(glm::mat4(1.0f), glm::radians((float)cameraPlayerAzimuthAltitude.x), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 matrixAltitude = glm::rotate(matrixAzimuth, glm::radians((float)cameraPlayerAzimuthAltitude.y), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 matrixAzimuth = glm::rotate(glm::mat4(1.0f), glm::radians((float)azimuthAltitude.x), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 matrixAltitude = glm::rotate(matrixAzimuth, glm::radians((float)azimuthAltitude.y), glm::vec3(1.0f, 0.0f, 0.0f));
 	dirForwardAzimuth = matrixAzimuth * dirForwardAzimuth;
 	dirForwardAzimuthAltitude = matrixAltitude * dirForwardAzimuthAltitude;
 	dirRight = matrixAltitude * dirRight;

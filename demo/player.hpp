@@ -9,10 +9,10 @@
 namespace Game {
 	class Player {
 		SGE::Camera camera;
-		glm::vec2 cameraPlayerAzimuthAltitude = glm::vec2(214.0f, -9.0);
+		glm::vec2 azimuthAltitude;
 
 	public:
-		Player();
+		Player(glm::vec3 position = glm::vec3(0.0f), glm::vec2 azimuthAltitude = glm::vec2(0.0f));
 		void setUniforms(GL::Program &targetProgram);
 		void update(GL::Window &window);
 		glm::vec3 getPosition();
