@@ -302,6 +302,14 @@ namespace Game {
 						o.second.model->draw();
 					}
 				}
+				{
+					SGE::Affine transform;
+					transform.reset();
+					transform.setScale(glm::vec3(0.1f));
+					transform.setPosition(cameraPlayer.getPosition());
+					programBDepth.setMat4f("matrixModel", transform.getTransformMatrix());
+					modelCube.draw();
+				}
 				//glCullFace(GL_BACK);
 			}
 
@@ -331,6 +339,17 @@ namespace Game {
 						if(o.second.model) {
 							o.second.model->draw();
 						}
+					}
+					{
+						SGE::BMaterial mat;
+						mat.setColorAlbedo(glm::vec3(1.0f, 0.0f, 0.0f));
+						SGE::Affine transform;
+						transform.reset();
+						transform.setScale(glm::vec3(0.1f));
+						transform.setPosition(cameraPlayer.getPosition());
+						programBMaterial.setMat4f("matrixModel", transform.getTransformMatrix());
+						mat.setUniforms(programBMaterial);
+						modelCube.draw();
 					}
 				}
 			}
@@ -362,12 +381,14 @@ namespace Game {
 
 			#if 1
 			// Debugging objects
-			SGE::Affine transform;
-			transform.reset();
-			transform.setScale(glm::vec3(0.01f));
-			transform.setPosition(lightPointPosition);
-			programBright.setMat4f("matrixModel", transform.getTransformMatrix());
-			modelCube.draw();
+			{
+				SGE::Affine transform;
+				transform.reset();
+				transform.setScale(glm::vec3(0.01f));
+				transform.setPosition(lightPointPosition);
+				programBright.setMat4f("matrixModel", transform.getTransformMatrix());
+				modelCube.draw();
+			}
 			#endif
 
 			/// End of drawing
