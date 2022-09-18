@@ -3,9 +3,9 @@
 #include "sge/base/affine.hpp"
 #include "sge/base/model.hpp"
 
-Game::PointLight::PointLight(glm::vec3 lightPointPosition, std::shared_ptr<GL::Program> program) {
+Game::PointLight::PointLight(glm::vec3 lightPointPosition, std::shared_ptr<GL::Program> programPointLight) {
 	this->position = lightPointPosition;
-	this->program = program;
+	this->program = programPointLight;
 
 	lightDepthCubemap.createFramebufferCubemapDepthmap(); // This bugs and hide other textures, why??
 	lightDepthCubemap.bindTextureDepth(10);

@@ -17,25 +17,11 @@ namespace Game {
 		return glm::vec3(vec.x, vec.z, -vec.y);
 	}
 
-	static GL::Program programBMaterial, programBright;
-
-	static std::map<std::string, std::unique_ptr<SGE::GameObject>> gameObjects;
-	static GL::Framebuffer teapotCubemap;
-
-	static std::vector<glm::vec3> lightPath;
-
 	static inline float map(float value, float min1, float max1, float min2, float max2) {
 		return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
 	}
 
-	static void loadTextures() {
-		/// Create textures
-		teapotCubemap.createFramebufferCubemap();
-		teapotCubemap.bindTextureColor(21);
-	}
-
-	static void loadModels() {
-
+	static void loadModels(std::map<std::string, std::unique_ptr<SGE::GameObject>> &gameObjects) {
 		const char *models_names[] = {"boxes", "bulb", "light_frame", "floor", "walls", "vent", "vent_pipe", "vent_hold", "vent_prop", "teapot"};
 		for(auto &o : models_names) {
 			// Load model data
@@ -103,49 +89,63 @@ namespace Game {
 		}
 	}
 
-	static void loadPaths() {
-		std::ifstream path;
-		path.open(PATH"/paths/lightpath.txt");
-		for(std::string line; std::getline(path, line); ) {
+	static void loadPath(std::vector<glm::vec3> &path) {
+		std::ifstream pathStream;
+		pathStream.open(PATH"/paths/lightpath.txt");
+		for(std::string line; std::getline(pathStream, line); ) {
 			glm::vec3 p;
 			if(sscanf(line.c_str(), "%f %f %f", &p.x, &p.y, &p.z) == 3) {
-				lightPath.push_back(p);
+				path.push_back(p);
 			}
 		}
-		path.close();
+		pathStream.close();
 	}
 
-	static void loadPrograms() {
-		programBMaterial.createFromFile(PATH"/programs/bmaterial/bmaterial.vert", PATH"/programs/bmaterial/bmaterial.frag");
-		programBright.createFromFile(PATH"/programs/bright/bright.vert", PATH"/programs/bright/bright.frag");
+	static void loadPrograms(std::map<std::string, std::unique_ptr<GL::Program>> &programs) {
+		auto program = std::make_unique<GL::Program>();
+		program->createFromFile(PATH"/programs/bmaterial/bmaterial.vert", PATH"/programs/bmaterial/bmaterial.frag");
+		programs["programBMaterial"] = std::move(program);
+
+		program = std::make_unique<GL::Program>();
+		program->createFromFile(PATH"/programs/bright/bright.vert", PATH"/programs/bright/bright.frag");
+		programs["programBright"] = std::move(program);
 	}
 
-	static void updateProgramsUniforms(bool once) {
+	static void updateProgramsUniforms(bool once, std::map<std::string, std::unique_ptr<GL::Program>> &programs) {
 		if(once) {
 			// Default model matrices
-			programBMaterial.setMat4f("matrixModel", glm::mat4(1.0f));
-			programBright.setMat4f("matrixModel", glm::mat4(1.0f));
+			programs["programBMaterial"]->setMat4f("matrixModel", glm::mat4(1.0f));
+			programs["programBright"]->setMat4f("matrixModel", glm::mat4(1.0f));
 
 			// Bind uniform textures to layers
-			programBMaterial.setInt("cubemapBackground", 20);
-			programBMaterial.setInt("sge_pointLight.cubemapDepthmap", 10);
-			programBMaterial.setInt("sge_material.cubemapEnvironment", 21);
+			programs["programBMaterial"]->setInt("cubemapBackground", 20);
+			programs["programBMaterial"]->setInt("sge_pointLight.cubemapDepthmap", 10);
+			programs["programBMaterial"]->setInt("sge_material.cubemapEnvironment", 21);
 		}
 
-
 		// Lights
-		programBMaterial.setVec3f("sge_pointLight.color", glm::vec3(0.7f, 0.7f, 0.7f));
-		programBMaterial.setFloat("sge_pointLight.intensity", 1.5f);
+		programs["programBMaterial"]->setVec3f("sge_pointLight.color", glm::vec3(0.7f, 0.7f, 0.7f));
+		programs["programBMaterial"]->setFloat("sge_pointLight.intensity", 1.5f);
 	}
 
 	static void Start() {
 		GL::Window window;
 		window.create(640 * 2.5, 480 * 2);
 
-		loadPrograms();
-		loadModels();
-		loadTextures();
-		loadPaths();
+		std::map<std::string, std::unique_ptr<SGE::GameObject>> gameObjects;
+		std::map<std::string, std::unique_ptr<GL::Program>> programs;
+
+		std::vector<glm::vec3> lightPath;
+
+		/// Create textures
+		GL::Framebuffer teapotCubemap;
+		teapotCubemap.createFramebufferCubemap();
+		teapotCubemap.bindTextureColor(21);
+
+		loadPrograms(programs);
+		loadModels(gameObjects);
+
+		loadPath(lightPath);
 
 		const char *cubemapBackgroundFiles[6] = {
 				PATH"/images/cubemaps/Maskonaive2/posx.jpg", PATH"/images/cubemaps/Maskonaive2/negx.jpg",
@@ -179,22 +179,19 @@ namespace Game {
 
 			// Player camera
 			player.update(window);
-			player.setUniforms(programBMaterial);
-			player.setUniforms(programBright);
+			player.setUniforms(*programs["programBMaterial"]);
+			player.setUniforms(*programs["programBright"]);
 
-			pointLight.setUniforms(programBMaterial);
-			pointLight.setUniforms(programBright);
+			pointLight.setUniforms(*programs["programBMaterial"]);
+			pointLight.setUniforms(*programs["programBright"]);
 
-			updateProgramsUniforms(once);
+			updateProgramsUniforms(once, programs);
 
-			pointLight.renderDepthCubemap([](std::shared_ptr<GL::Program> program) {
+			pointLight.renderDepthCubemap([&](std::shared_ptr<GL::Program> programPointLight) {
 				//glCullFace(GL_FRONT);
 				for (auto &o: gameObjects) {
-					/*if(o.second->bmaterial) {
-						o.second->bmaterial->setUniforms(*program);
-					}*/
 					if (o.second->affine) {
-						o.second->affine->setUniforms(*program);
+						o.second->affine->setUniforms(*programPointLight);
 					}
 					if (o.second->model) {
 						o.second->model->draw();
@@ -203,7 +200,7 @@ namespace Game {
 				//glCullFace(GL_BACK);
 			});
 
-			#if 0
+			#if 1
 			/// Drawing - textures
 			SGE::Camera cameraCubemap(1.0f, glm::vec3(0.0), glm::vec3(0.0), 90.0f);
 			std::array<std::pair<glm::vec3, glm::vec3>, 6> cameraCubemapList = {
@@ -226,16 +223,16 @@ namespace Game {
 					cameraCubemap.setUpVector(cameraCubemapList[i].second);
 
 					// Objects in scene
-					programBMaterial.setMat4f("matrixCamera", cameraCubemap.getTransformMatrix());
+					programs["programBMaterial"]->setMat4f("matrixCamera", cameraCubemap.getTransformMatrix());
 					for(auto &o : gameObjects) {
 						if(o.first == "teapot") {
 							continue;
 						}
 						if(o.second->bmaterial) {
-							o.second->bmaterial->setUniforms(programBMaterial);
+							o.second->bmaterial->setUniforms(*programs["programBMaterial"]);
 						}
 						if(o.second->affine) {
-							o.second->affine->setUniforms(programBMaterial);
+							o.second->affine->setUniforms(*programs["programBMaterial"]);
 						}
 						if(o.second->model) {
 							o.second->model->draw();
@@ -248,8 +245,8 @@ namespace Game {
 						transform.reset();
 						transform.setScale(glm::vec3(0.1f));
 						transform.setPosition(player.getPosition());
-						programBMaterial.setMat4f("matrixModel", transform.getTransformMatrix());
-						mat.setUniforms(programBMaterial);
+						programs["programBMaterial"]->setMat4f("matrixModel", transform.getTransformMatrix());
+						mat.setUniforms(*programs["programBMaterial"]);
 						SGE::Model modelCube;
 						modelCube.createCube();
 						modelCube.draw();
@@ -268,13 +265,13 @@ namespace Game {
 
 			#if 1
 			// Objects in scene
-			player.setUniforms(programBMaterial);
+			player.setUniforms(*programs["programBMaterial"]);
 			for(auto &o : gameObjects) {
 				if(o.second->bmaterial) {
-					o.second->bmaterial->setUniforms(programBMaterial);
+					o.second->bmaterial->setUniforms(*programs["programBMaterial"]);
 				}
 				if(o.second->affine) {
-					o.second->affine->setUniforms(programBMaterial);
+					o.second->affine->setUniforms(*programs["programBMaterial"]);
 				}
 				if(o.second->model) {
 					o.second->model->draw();
@@ -284,7 +281,7 @@ namespace Game {
 
 			#if 1
 			// Debugging objects
-			pointLight.renderDebug(programBright);
+			pointLight.renderDebug(*programs["programBright"]);
 			#endif
 
 			/// End of drawing

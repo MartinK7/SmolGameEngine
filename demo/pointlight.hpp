@@ -15,8 +15,8 @@ namespace Game {
 		glm::vec3 position;
 		std::shared_ptr<GL::Program> program;
 	public:
-		PointLight(glm::vec3 lightPointPosition, std::shared_ptr<GL::Program> program);
-		void renderDepthCubemap(std::function<void(std::shared_ptr<GL::Program> program)> renderCallback);
+		PointLight(glm::vec3 lightPointPosition, std::shared_ptr<GL::Program> programPointLight);
+		void renderDepthCubemap(std::function<void(std::shared_ptr<GL::Program> programPointLight)> renderCallback);
 		void renderDebug(GL::Program &targetProgram);
 		void setUniforms(GL::Program &targetProgram);
 
