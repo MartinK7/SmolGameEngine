@@ -4,7 +4,7 @@
 Game::Background::Background(const char **cubemapBackgroundFiles) {
 	modelCube.createCube();
 
-	programBackground.createFromFile(PATH"/programs/background/background.vert", PATH"/programs/background/background.frag");
+	programBackground.createFromFile(CONFIG_ASSETS_PATH"programs/background/background.vert", CONFIG_ASSETS_PATH"programs/background/background.frag");
 	programBackground.setInt("cubemapBackground", 20);
 
 	cubemapBackground.createCubemapFromFiles(cubemapBackgroundFiles);

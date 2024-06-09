@@ -11,8 +11,6 @@
 
 #include "player.hpp"
 
-#define PATH "../demo/assets"
-
 namespace Game {
 	class Background {
 		GL::Texture cubemapBackground;

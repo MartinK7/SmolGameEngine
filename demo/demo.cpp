@@ -8,7 +8,6 @@
 #include "sge/gl/gl.hpp"
 #include "sge/base/sge.hpp"
 
-#define PATH "../demo/assets/"
 #define SCR_WIDTH  640
 #define SCR_HEIGHT 480
 
@@ -53,15 +52,15 @@ namespace GL::Test {
 		vao.addAttributes({GL::VAO::Vec3f, GL::VAO::Vec2f});
 
 		GL::Program program;
-		program.createFromFile(PATH"programs/demo/simple.vert", PATH"programs/demo/simple.frag");
+		program.createFromFile(CONFIG_ASSETS_PATH"programs/demo/simple.vert", CONFIG_ASSETS_PATH"programs/demo/simple.frag");
 		program.setInt("textureAlbedo1", 0);
 		program.setInt("textureAlbedo2", 1);
 
 		GL::Texture tex2;
-		tex2.createFromFile(PATH"images/textures/TexturesCom_Stone_BaseSurface3_1x1_1K/TexturesCom_Stone_BaseSurface3_1x1_1K_albedo.png");
+		tex2.createFromFile(CONFIG_ASSETS_PATH"images/textures/TexturesCom_Stone_BaseSurface3_1x1_1K/TexturesCom_Stone_BaseSurface3_1x1_1K_albedo.png");
 
 		GL::Texture tex;
-		tex.createFromFile(PATH"images/textures/TexturesCom_Cargo0097/TexturesCom_Cargo0097_M.jpg");
+		tex.createFromFile(CONFIG_ASSETS_PATH"images/textures/TexturesCom_Cargo0097/TexturesCom_Cargo0097_M.jpg");
 
 		tex2.bind(1);
 		tex.bind(0);
@@ -110,15 +109,15 @@ namespace GL::Test {
 		vao.addAttributes({GL::VAO::Vec3f, GL::VAO::Vec2f});
 
 		GL::Program program;
-		program.createFromFile(PATH"programs/demo/simple.vert", PATH"programs/demo/simple.frag");
+		program.createFromFile(CONFIG_ASSETS_PATH"programs/demo/simple.vert", CONFIG_ASSETS_PATH"programs/demo/simple.frag");
 		program.setInt("textureAlbedo1", 0);
 		program.setInt("textureAlbedo2", 1);
 
 		GL::Texture tex2;
-		tex2.createFromFile(PATH"images/textures/TexturesCom_Stone_BaseSurface3_1x1_1K/TexturesCom_Stone_BaseSurface3_1x1_1K_albedo.png");
+		tex2.createFromFile(CONFIG_ASSETS_PATH"images/textures/TexturesCom_Stone_BaseSurface3_1x1_1K/TexturesCom_Stone_BaseSurface3_1x1_1K_albedo.png");
 
 		GL::Texture tex;
-		tex.createFromFile(PATH"images/textures/TexturesCom_Cargo0097/TexturesCom_Cargo0097_M.jpg");
+		tex.createFromFile(CONFIG_ASSETS_PATH"images/textures/TexturesCom_Cargo0097/TexturesCom_Cargo0097_M.jpg");
 
 		GL::VertexBufferObject<glm::vec3> ibo;
 		{
@@ -159,15 +158,15 @@ namespace GL::Test {
 		GL::VertexBufferObject<VertexXYST> vbo1, vbo2;
 		GL::VertexBufferObject<GLuint> ebo1, ebo2;
 
-		program.createFromFile(PATH"programs/demo/simple.vert", PATH"programs/demo/simple.frag");
+		program.createFromFile(CONFIG_ASSETS_PATH"programs/demo/simple.vert", CONFIG_ASSETS_PATH"programs/demo/simple.frag");
 		program.setInt("textureAlbedo1", 0);
 		program.setInt("textureAlbedo2", 1);
 
 		GL::Texture tex2;
-		tex2.createFromFile(PATH"images/textures/TexturesCom_Stone_BaseSurface3_1x1_1K/TexturesCom_Stone_BaseSurface3_1x1_1K_albedo.png");
+		tex2.createFromFile(CONFIG_ASSETS_PATH"images/textures/TexturesCom_Stone_BaseSurface3_1x1_1K/TexturesCom_Stone_BaseSurface3_1x1_1K_albedo.png");
 
 		GL::Texture tex;
-		tex.createFromFile(PATH"images/textures/TexturesCom_Cargo0097/TexturesCom_Cargo0097_M.jpg");
+		tex.createFromFile(CONFIG_ASSETS_PATH"images/textures/TexturesCom_Cargo0097/TexturesCom_Cargo0097_M.jpg");
 
 		{
 			const float diameter = 0.1f;
@@ -267,11 +266,11 @@ namespace GL::Test {
 		win.create(SCR_WIDTH, SCR_HEIGHT, "", MSAA);
 
 		GL::Program program;
-		program.createFromFile(PATH"programs/demo/cubes.vert", PATH"programs/demo/cubes.frag");
+		program.createFromFile(CONFIG_ASSETS_PATH"programs/demo/cubes.vert", CONFIG_ASSETS_PATH"programs/demo/cubes.frag");
 		program.setInt("textureAlbedo", 0);
 
 		GL::Texture tex;
-		tex.createFromFile(PATH"images/textures/TexturesCom_Cargo0097/TexturesCom_Cargo0097_M.jpg");
+		tex.createFromFile(CONFIG_ASSETS_PATH"images/textures/TexturesCom_Cargo0097/TexturesCom_Cargo0097_M.jpg");
 		tex.bind(0);
 
 		SGE::Model cube;
@@ -336,7 +335,7 @@ namespace GL::Test {
 				std::cerr << "ERROR::FRAMEBUFFER:: Intermediate framebuffer is not complete!" << std::endl;
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-			screenShader.createFromFile(PATH"programs/demo/screen.vert", PATH"programs/demo/screen.frag");
+			screenShader.createFromFile(CONFIG_ASSETS_PATH"programs/demo/screen.vert", CONFIG_ASSETS_PATH"programs/demo/screen.frag");
 			screenShader.setInt("textureScreen", 0);
 		}
 #endif // MSAA
@@ -501,21 +500,21 @@ namespace GL::Test {
 		SGE::Camera cameraMain(window.getRatio(), glm::vec3(0.0f, 3.0f, 4.0f));
 		SGE::Camera cameraLight(1.0f, glm::vec3(0.0f, 3.0f, 4.0f));
 
-		textureWood.createFromFile(PATH"images/textures/TexturesCom_Cargo0097/TexturesCom_Cargo0097_M.jpg");
+		textureWood.createFromFile(CONFIG_ASSETS_PATH"images/textures/TexturesCom_Cargo0097/TexturesCom_Cargo0097_M.jpg");
 		const char *cubemapFiles[] = {
-				PATH"images/skybox/right.jpg", PATH"images/skybox/left.jpg",
-				PATH"images/skybox/top.jpg", PATH"images/skybox/bottom.jpg",
-				PATH"images/skybox/front.jpg", PATH"images/skybox/back.jpg"
+				CONFIG_ASSETS_PATH"images/skybox/right.jpg", CONFIG_ASSETS_PATH"images/skybox/left.jpg",
+				CONFIG_ASSETS_PATH"images/skybox/top.jpg", CONFIG_ASSETS_PATH"images/skybox/bottom.jpg",
+				CONFIG_ASSETS_PATH"images/skybox/front.jpg", CONFIG_ASSETS_PATH"images/skybox/back.jpg"
 		};
 		textureSkybox.createCubemapFromFiles(cubemapFiles);
 
-		programBricks.createFromFile(PATH"programs/demo/shader.vert", PATH"programs/demo/shader_bricks.frag");
-		programMarble.createFromFile(PATH"programs/demo/shader.vert", PATH"programs/demo/shader_marble.frag");
-		programTexture.createFromFile(PATH"programs/demo/shader.vert", PATH"programs/demo/shader_texture.frag");
-		programWood.createFromFile(PATH"programs/demo/shader.vert", PATH"programs/demo/shader_wood.frag");
-		programDepth.createFromFile(PATH"programs/demo/depth.vert", PATH"programs/demo/depth.frag");
-		programSkybox.createFromFile(PATH"programs/demo/skybox.vert", PATH"programs/demo/skybox.frag");
-		programMirror.createFromFile(PATH"programs/demo/shader.vert", PATH"programs/demo/shader_mirror.frag");
+		programBricks.createFromFile(CONFIG_ASSETS_PATH"programs/demo/shader.vert", CONFIG_ASSETS_PATH"programs/demo/shader_bricks.frag");
+		programMarble.createFromFile(CONFIG_ASSETS_PATH"programs/demo/shader.vert", CONFIG_ASSETS_PATH"programs/demo/shader_marble.frag");
+		programTexture.createFromFile(CONFIG_ASSETS_PATH"programs/demo/shader.vert", CONFIG_ASSETS_PATH"programs/demo/shader_texture.frag");
+		programWood.createFromFile(CONFIG_ASSETS_PATH"programs/demo/shader.vert", CONFIG_ASSETS_PATH"programs/demo/shader_wood.frag");
+		programDepth.createFromFile(CONFIG_ASSETS_PATH"programs/demo/depth.vert", CONFIG_ASSETS_PATH"programs/demo/depth.frag");
+		programSkybox.createFromFile(CONFIG_ASSETS_PATH"programs/demo/skybox.vert", CONFIG_ASSETS_PATH"programs/demo/skybox.frag");
+		programMirror.createFromFile(CONFIG_ASSETS_PATH"programs/demo/shader.vert", CONFIG_ASSETS_PATH"programs/demo/shader_mirror.frag");
 
 		ground.createCube();
 		marble.createSphere(32, 32);

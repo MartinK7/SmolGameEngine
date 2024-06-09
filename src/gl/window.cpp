@@ -5,10 +5,6 @@
 #include "sge/gl/window.hpp"
 
 namespace GL {
-	GLFWwindow *Window::getWindowPtr() const {
-		return window_ptr;
-	}
-
 	void Window::create(uint32_t width, uint32_t height, const char *title, int msaaSamples) {
 		width = width;
 		height = height;

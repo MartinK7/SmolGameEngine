@@ -6,7 +6,7 @@
 #include "model.hpp"
 #include "camera.hpp"
 #include "affine.hpp"
-#include "bmaterial.hpp"
+#include "material.hpp"
 #include "gameobject.hpp"
 #include "pointlight.hpp"
 

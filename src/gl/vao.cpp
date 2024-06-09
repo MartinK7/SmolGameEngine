@@ -39,7 +39,7 @@ namespace GL {
 	void VertexArrayObject::addAttributes(const std::list<VAO::Attribute> &attributes, GLuint divisor) {
 		bind();
 		GLint sum = 0;
-		size_t offsetCounter = 0;
+		std::size_t offsetCounter = 0;
 
 		for(auto &k : attributes) {
 			sum += k;

@@ -47,6 +47,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
 )
 target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC
     ${GLFW3_CFLAGS_OTHER}
+    -DCONFIG_ASSETS_PATH="../demo/assets/"
 )
 target_link_libraries(${CMAKE_PROJECT_NAME} ${EXTRA_LIBS}
     ${GLFW3_LIBRARIES}

@@ -15,7 +15,6 @@ namespace GL {
 		glm::vec2 lastMousePosition;
 	public:
 		~Window();
-		GLFWwindow *getWindowPtr() const;
 		void setTitle(const char *title);
 		void setTitleFPS(const char *title = "");
 		void create(uint32_t width, uint32_t height, const char *title = "", int msaaSamples = 4);
