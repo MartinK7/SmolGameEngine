@@ -1,4 +1,5 @@
-#version 460 core
+#version 100
+precision mediump float;
 
 /// Declarations
 struct sge_pointLight_s
@@ -10,7 +11,7 @@ struct sge_pointLight_s
 uniform sge_pointLight_s sge_pointLight;
 
 /// Input
-in vec3 ioFragmentPosition;
+varying vec3 ioFragmentPosition;
 
 /// Main function
 void main()

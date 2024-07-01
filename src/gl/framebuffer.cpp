@@ -56,11 +56,16 @@ void GL::Framebuffer::setViewPort(int face) {
 	switch(type) {
 		case FramebufferType::T2D_DEPTHMAP:
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureDepth.getIdTexture(), 0);
+#ifndef CONFIG_OPENGL_ES2
 			glDrawBuffer(GL_NONE);
+#endif // CONFIG_OPENGL_ES2
 			break;
 		case FramebufferType::CUBEMAP_DEPTHMAP:
+			//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, 0);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, textureDepth.getIdTexture(), 0);
+#ifndef CONFIG_OPENGL_ES2
 			glDrawBuffer(GL_NONE);
+#endif // CONFIG_OPENGL_ES2
 			break;
 		case FramebufferType::T2D_COLOR:
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColor.getIdTexture(), 0);
@@ -72,8 +77,10 @@ void GL::Framebuffer::setViewPort(int face) {
 			break;
 	}
 	/*if(face == 0)*/ {
+#ifndef CONFIG_OPENGL_ES2
 		//
 		glReadBuffer(GL_NONE);
+#endif // CONFIG_OPENGL_ES2
 		//
 		glViewport(0, 0, textureDepth.getWidth(), textureDepth.getHeight());
 		//
@@ -91,7 +98,13 @@ void GL::Framebuffer::bindTextureColor(GLuint layer) {
 void GL::Framebuffer::bindTextureDepth(GLuint layer) {
 	textureDepth.bind(layer);
 }
-
+#include <cstdio>
 void GL::Framebuffer::bind() const {
 	glBindFramebuffer(GL_FRAMEBUFFER, ID_fbo);
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE) {
+		// Handle incomplete framebuffer
+		printf("Framebuffer not complete: %d %X\n", ID_fbo, status);
+	}
 }

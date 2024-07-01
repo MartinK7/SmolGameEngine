@@ -55,10 +55,15 @@ namespace GL {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, channels == 1 ? GL_NEAREST : GL_LINEAR);
 		// Enable clamp depth map
 		if(channels == 1) {
+#ifndef CONFIG_OPENGL_ES2
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 			float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+#else
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#endif // CONFIG_OPENGL_ES2
 		}
 		// Upload data
 		if(channels == 3) {
@@ -66,7 +71,7 @@ namespace GL {
 		} else if(channels == 4) {
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imagePixels);
 		} else if(channels == 1) {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, imagePixels);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT/*GL_FLOAT*/, imagePixels);
 		} else {
 			fprintf(stderr, "Texture image must be equal to: 1, 3 or 4 channels!\n");
 		}
@@ -126,7 +131,9 @@ namespace GL {
 		// Set the texture wrapping parameters
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#ifndef CONFIG_OPENGL_ES2
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+#endif // CONFIG_OPENGL_ES2
 		// Set texture filtering parameters
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, channels == 1 ? GL_NEAREST : GL_LINEAR);//GL_LINEAR_MIPMAP_LINEAR
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, channels == 1 ? GL_NEAREST : GL_LINEAR);
@@ -134,7 +141,9 @@ namespace GL {
 		if(channels == 1) {
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#ifndef CONFIG_OPENGL_ES2
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+#endif // CONFIG_OPENGL_ES2
 //			float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 //			glTexParameterfv(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, borderColor); // Is this needed?
 		}
@@ -149,7 +158,7 @@ namespace GL {
 			}
 		} else if(channels == 1) {
 			for(int i = 0; i < 6; i++) {
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, imagePixels ? imagePixels[i] : nullptr);
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT16, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT/*GL_FLOAT*/, imagePixels ? imagePixels[i] : nullptr);
 			}
 		} else {
 			fprintf(stderr, "Texture image must be equal to: 1, 3 or 4 channels!\n");

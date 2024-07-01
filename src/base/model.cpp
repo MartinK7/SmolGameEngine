@@ -162,6 +162,30 @@ void SGE::Model::draw() {
 		GL::Draw::Draw(ebo, GL::Draw::Triangles);
 		return;
 	}
+
+	GLint counter = 0;
+	std::size_t offsetCounter = 0;
+	GLint sum = 3 + 2 + 3;
+	int k;
+
+	k = 3;
+	glEnableVertexAttribArray(counter);
+	glVertexAttribPointer(counter, k, GL_FLOAT, GL_FALSE, sum * sizeof(float), (void*)offsetCounter);
+	offsetCounter += (k*sizeof(float));
+	++counter;
+
+	k = 2;
+	glEnableVertexAttribArray(counter);
+	glVertexAttribPointer(counter, k, GL_FLOAT, GL_FALSE, sum * sizeof(float), (void*)offsetCounter);
+	offsetCounter += (k*sizeof(float));
+	++counter;
+
+	k = 3;
+	glEnableVertexAttribArray(counter);
+	glVertexAttribPointer(counter, k, GL_FLOAT, GL_FALSE, sum * sizeof(float), (void*)offsetCounter);
+	offsetCounter += (k*sizeof(float));
+	++counter;
+
 	GL::Draw::Draw(vbo, GL::Draw::Triangles);
 }
 

@@ -12,9 +12,16 @@ namespace GL {
 		if (!glfwInit())
 			exit(1);
 
+#ifndef CONFIG_OPENGL_ES2
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#else
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif // CONFIG_OPENGL_ES2
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 		if(msaaSamples) {
 			glfwWindowHint(GLFW_SAMPLES, msaaSamples);
@@ -31,7 +38,12 @@ namespace GL {
 		glfwSetWindowUserPointer(window_ptr, this);
 
 		// Init OpenGL
+#ifndef CONFIG_OPENGL_ES2
 		gladLoadGL();
+#else
+		gladLoadGLES1Loader((GLADloadproc)glfwGetProcAddress);
+		gladLoadGLES2Loader((GLADloadproc)glfwGetProcAddress);
+#endif // CONFIG_OPENGL_ES2
 
 		lastTime = (float)glfwGetTime();
 

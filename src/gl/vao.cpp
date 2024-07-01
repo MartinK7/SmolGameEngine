@@ -7,7 +7,7 @@ namespace GL {
 	VertexArrayObject::~VertexArrayObject() {
 		if(ID_VAO) {
 			unbind();
-			glDeleteVertexArrays(1, &ID_VAO);
+//			glDeleteVertexArrays(1, &ID_VAO);
 		}
 	}
 
@@ -15,23 +15,23 @@ namespace GL {
 		// Destroy
 		if(ID_VAO) {
 			unbind();
-			glDeleteVertexArrays(1, &ID_VAO);
+//			glDeleteVertexArrays(1, &ID_VAO);
 		}
 
-		glGenVertexArrays(1, &ID_VAO);
+//		glGenVertexArrays(1, &ID_VAO);
 		bind();
 	}
 
 	void VertexArrayObject::bind() const {
 		if(GL_state_VAO != ID_VAO) {
-			glBindVertexArray(ID_VAO);
+//			glBindVertexArray(ID_VAO);
 			GL_state_VAO = ID_VAO;
 		}
 	}
 
 	void VertexArrayObject::unbind() const {
 		if(GL_state_VAO == ID_VAO) {
-			glBindVertexArray(0);
+//			glBindVertexArray(0);
 			GL_state_VAO = 0;
 		}
 	}
@@ -69,8 +69,8 @@ namespace GL {
 					offsetCounter += (k*sizeof(float));
 					break;
 			}
-			if(divisor)
-				glVertexAttribDivisor(counter, divisor);
+//			if(divisor)
+//				glVertexAttribDivisor(counter, divisor);
 			counter++;
 		}
 	}

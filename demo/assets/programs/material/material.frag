@@ -1,4 +1,5 @@
-#version 460 core
+#version 100
+precision mediump float;
 
 /// Declarations
 struct sge_bmaterial_s
@@ -26,7 +27,6 @@ struct ambientLight_s
 };
 
 /// Fragment output
-out vec4 FragColor;
 
 /// Uniforms
 uniform sge_bmaterial_s sge_material;
@@ -34,10 +34,10 @@ uniform sge_pointLight_s sge_pointLight;
 uniform samplerCube cubemapBackground;
 
 /// Input
-in vec2 ioST;
-in vec3 ioNormal;
-in vec3 ioFragmentPosition;
-in vec3 ioCameraPosition;
+varying vec2 ioST;
+varying vec3 ioNormal;
+varying vec3 ioFragmentPosition;
+varying vec3 ioCameraPosition;
 
 /// Functions
 vec3 tonemap(vec3 x)
@@ -65,6 +65,7 @@ vec3 tonemap(vec3 x)
     #endif
 }
 
+#if 0
 float shadow()
 {
     const float far_plane = 100.0;
@@ -94,8 +95,49 @@ float shadow()
     shadow /= (samples * samples * samples);
     return clamp(shadow, 0.0, 1.0);
 }
+#else
+float LinearizeDepth(float depth)
+{
+    const float far_plane = 100.0;
+    const float near_plane = 0.1;
+    float z = depth * 2.0 - 1.0; // Back to NDC
+    return (2.0 * near_plane * far_plane) / (far_plane + near_plane - z * (far_plane - near_plane));
+}
+float UnLinearizeDepth(float lin)
+{
+    const float far_plane = 100.0;
+    const float near_plane = 0.1;
+    float z = ((2.0 * near_plane * far_plane) / lin - far_plane - near_plane) / (far_plane - near_plane) * (-1.0);
+    return (z + 1.0) / 2.0;
+}
+float shadow()
+{
+    vec3 fragmentPositionDepthMap = vec3(1.0);
 
-/// Main function
+    vec3 fragmentToLight = ioFragmentPosition - sge_pointLight.position;
+
+    // Calcualte shadows
+    float currentDepth = length(fragmentToLight);
+    float bias = 0.0;
+    float shadow = 0.0;
+    float closestDepth = LinearizeDepth(textureCube(sge_pointLight.cubemapDepthmap, fragmentToLight).r);
+    if(currentDepth - closestDepth > bias)
+        shadow = 1.0;
+    return shadow;//LinearizeDepth(closestDepth);//closestDepth; //currentDepth > 0.9 && currentDepth < 1.1 ? 0.8 : 0.5;//clamp(shadow, 0.0, 1.0);
+}
+float dista()
+{
+    vec3 fragmentPositionDepthMap = vec3(1.0);
+
+    vec3 fragmentToLight = ioFragmentPosition - sge_pointLight.position;
+    float currentDepth = length(fragmentToLight);
+
+    float closestDepth = textureCube(sge_pointLight.cubemapDepthmap, fragmentToLight).r;
+    return abs(currentDepth - LinearizeDepth(closestDepth)) < 1.0 ? 1.0 : 0.0;//closestDepth; //currentDepth > 0.9 && currentDepth < 1.1 ? 0.8 : 0.5;//clamp(shadow, 0.0, 1.0);
+}
+#endif
+
+/// Mavarying function
 void main()
 {
     ambientLight_s ambientLight;
@@ -104,14 +146,16 @@ void main()
 
     vec3 normal = normalize(ioNormal);
 
-    vec3 colorGlossy = texture(sge_material.cubemapEnvironment, reflect(ioFragmentPosition - ioCameraPosition, normal)).rgb;
+    vec3 colorGlossy = textureCube(sge_material.cubemapEnvironment, reflect(ioFragmentPosition - ioCameraPosition, normal)).rgb;
 
     vec3 sge_pointLightDirection = normalize(sge_pointLight.position - ioFragmentPosition);
-    vec3 colorDiffuse = (mix(sge_material.colorAlbedo, texture(sge_material.textureAlbedo, ioST).rgb, sge_material.mixColorTextureAlbedo)) * sge_pointLight.color * ((1.0 - shadow()) * sge_pointLight.intensity + ambientLight.intensity) * max(dot(normal, sge_pointLightDirection), 0.0);
+    vec3 colorDiffuse = (mix(sge_material.colorAlbedo, texture2D(sge_material.textureAlbedo, ioST).rgb, sge_material.mixColorTextureAlbedo)) * sge_pointLight.color * ((1.0 - shadow()) * sge_pointLight.intensity + ambientLight.intensity) * max(dot(normal, sge_pointLightDirection), 0.0);
 
     vec3 colorAmbient = ambientLight.color * ambientLight.intensity;
 
     vec3 color = mix(colorDiffuse, colorGlossy, sge_material.glossy);
 
-    FragColor = vec4(tonemap(color), 1.0);
+    //color = mix(color, vec3(dista()), 1.0);
+
+    gl_FragColor = vec4(tonemap(color), 1.0);
 }

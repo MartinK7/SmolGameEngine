@@ -14,7 +14,11 @@ namespace GL::Draw {
 	}
 
 	void DrawArraysInstanced(GLsizei countVertices, GLsizei countInstances, enum Mode mode) {
+#ifndef CONFIG_OPENGL_ES2
 		glDrawArraysInstanced(mode, 0, countVertices, countInstances);
+#else
+		glDrawArrays(mode, 0, countVertices);
+#endif
 	}
 
 	void DrawElementsInstanced(GLsizei countPrimitives, GLsizei countInstances, enum Mode mode) {
@@ -32,6 +36,10 @@ namespace GL::Draw {
 			default:
 				return;
 		}
+#ifndef CONFIG_OPENGL_ES2
 		glDrawElementsInstanced(mode, countPrimitives * modeSize, GL_UNSIGNED_INT, nullptr, countInstances);
+#else
+		glDrawElements(mode, countPrimitives * modeSize, GL_UNSIGNED_INT, nullptr);
+#endif
 	}
 }

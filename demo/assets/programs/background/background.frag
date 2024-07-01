@@ -1,16 +1,17 @@
-#version 460 core
+#version 100
+precision mediump float;
 
 /// Fragment output
-out vec4 FragColor;
+//out vec4 FragColor;
 
 /// Uniforms
 uniform samplerCube cubemapBackground;
 
 /// Input
-in vec3 ioFragmentPosition;
+varying vec3 ioFragmentPosition;
 
 /// Functions
 void main()
 {
-    FragColor = vec4(texture(cubemapBackground, ioFragmentPosition).rgb, 1.0);
+    gl_FragColor = vec4(textureCube(cubemapBackground, ioFragmentPosition).rgb, 1.0);
 }

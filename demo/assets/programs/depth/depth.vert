@@ -1,12 +1,12 @@
-#version 460 core
+#version 100
 
 /// Layout
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec2 ST;
-layout (location = 2) in vec3 normal;
+attribute in vec3 position;
+attribute in vec2 ST;
+attribute in vec3 normal;
 
 /// Outputs
-out vec3 ioFragmentPosition;
+varying vec3 ioFragmentPosition;
 
 /// Uniforms
 uniform mat4 matrixModel;

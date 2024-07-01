@@ -4,6 +4,7 @@
 Game::Player::Player(glm::vec3 position, glm::vec2 azimuthAltitude) {
 	this->azimuthAltitude = azimuthAltitude;
 	camera.setPosition(position);
+	camera.setAspectRatio(90.0);
 }
 
 void Game::Player::setUniforms(GL::Program &targetProgram) {

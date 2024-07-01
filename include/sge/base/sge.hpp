@@ -8,6 +8,5 @@
 #include "affine.hpp"
 #include "material.hpp"
 #include "gameobject.hpp"
-#include "pointlight.hpp"
 
 #endif //SGE_SGE_HPP
