@@ -1,7 +1,8 @@
-#version 460 core
+#version 100
+precision mediump float;
 
 /// Fragment output
-out vec4 FragColor;
+// out vec4 FragColor;
 
 /// Uniforms
 
@@ -10,5 +11,5 @@ out vec4 FragColor;
 /// Functions
 void main()
 {
-    FragColor = vec4(vec3(1.0f), 1.0);
+    gl_FragColor = vec4(vec3(1.0f), 1.0);
 }

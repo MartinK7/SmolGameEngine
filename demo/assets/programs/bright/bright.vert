@@ -1,9 +1,9 @@
-#version 460 core
+#version 100
 
 /// Layout
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec2 ST;
-layout (location = 2) in vec3 normal;
+attribute vec3 position;
+attribute vec2 ST;
+attribute vec3 normal;
 
 /// Outputs
 

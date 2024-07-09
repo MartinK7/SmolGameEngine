@@ -149,7 +149,7 @@ namespace Game {
 
 	static void Start() {
 		GL::Window window;
-		window.create(1024, 1024);
+		window.create(640 * 2, 480 * 2);
 
 		std::map<std::string, std::unique_ptr<SGE::GameObject>> gameObjects;
 		std::map<std::string, std::unique_ptr<GL::Program>> programs;
@@ -188,10 +188,10 @@ namespace Game {
 			window.getMouseDelta();
 
 			// Animate point light
-			float t = 10.0;//window.getTimeSeconds();
-			uint32_t index = (uint32_t)(t * 1.0f);
-			float t0 = (float)(index + 0) / 1.0f;
-			float t1 = (float)(index + 1) / 1.0f;
+			float t = window.getTimeSeconds();//10.0;
+			uint32_t index = (uint32_t)(t * 10.0f);
+			float t0 = (float)(index + 0) / 10.0f;
+			float t1 = (float)(index + 1) / 10.0f;
 			if(index + 1 < lightPath.size()) {
 				pointLight.setPosition(glm::mix(lightPath[index], lightPath[index + 1], Map(t, t0, t1, 0.0f, 1.0f)));
 			}
@@ -207,9 +207,11 @@ namespace Game {
 			UpdateProgramsUniforms(once, programs);
 
 			pointLight.renderDepthCubemap([&](std::shared_ptr<GL::Program> programPointLight) {
-				glCullFace(GL_FRONT);
+				//glCullFace(GL_FRONT);
+				//glClearColor(1.0, 1.0, 1.0, 1.0);
+				//glClear(GL_COLOR_BUFFER_BIT);
 				RenderScene(gameObjects, *programPointLight, false, {""});
-				glCullFace(GL_BACK);
+				//glCullFace(GL_BACK);
 			});
 
 			#if 1

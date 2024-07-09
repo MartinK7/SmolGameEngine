@@ -2,8 +2,8 @@
 
 /// Laout
 attribute vec3 position;
-attribute in vec2 ST;
-attribute in vec3 normal;
+attribute vec2 ST;
+attribute vec3 normal;
 
 /// Outputs
 varying vec3 ioFragmentPosition;

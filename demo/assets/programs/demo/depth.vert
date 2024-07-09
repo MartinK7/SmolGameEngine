@@ -15,8 +15,13 @@ uniform mat4 transformCameraMatrixDepth;
 uniform mat4 matrixModel;
 uniform mat4 matrixCamera;
 
+/// Outputs
+varying vec3 ioFragmentPosition;
+
 void main()
 {
     vec4 fragmentPosition = matrixModel * vec4(position, 1.0);
     gl_Position = matrixCamera * fragmentPosition;
+
+    ioFragmentPosition = fragmentPosition.xyz;
 }

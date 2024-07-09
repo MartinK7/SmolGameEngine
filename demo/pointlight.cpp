@@ -9,8 +9,9 @@ Game::PointLight::PointLight(glm::vec3 lightPointPosition, std::shared_ptr<GL::P
 	this->position = lightPointPosition;
 	this->program = programPointLight;
 
-	lightDepthCubemap.createFramebufferCubemapDepthmap(1024, 1024); // This bugs and hide other textures, why??
-	lightDepthCubemap.bindTextureDepth(10);
+	lightDepthCubemap.createFramebufferCubemap(1024, 1024); // This bugs and hide other textures, why??
+	//lightDepthCubemap.bindTextureDepth(10);
+	lightDepthCubemap.bindTextureColor(10);
 }
 
 const glm::vec3 &Game::PointLight::getPosition() const {
