@@ -158,7 +158,7 @@ namespace GL {
 			}
 		} else if(channels == 1) {
 			for(int i = 0; i < 6; i++) {
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, imagePixels ? imagePixels[i] : nullptr);
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT16, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, imagePixels ? imagePixels[i] : nullptr);
 			}
 		} else {
 			fprintf(stderr, "Texture image must be equal to: 1, 3 or 4 channels!\n");

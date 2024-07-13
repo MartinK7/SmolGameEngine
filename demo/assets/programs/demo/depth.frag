@@ -13,12 +13,13 @@ uniform sge_pointLight_s sge_pointLight;
 /// Input
 varying vec3 ioFragmentPosition;
 
-vec3 unpackColor(float f) {
-    vec3 color;
-    color.b = floor(f / 256.0 / 256.0);
-    color.g = floor((f - color.b * 256.0 * 256.0) / 256.0);
-    color.r = floor(f - color.b * 256.0 * 256.0 - color.g * 256.0);
-    // now we have a vec3 with the 3 components in range [0..255]. Let's normalize it!
+highp vec3 floatToColor(highp float f)
+{
+    f *= 16777216.0; // 256.0 * 256.0 * 256.0
+    highp vec3 color;
+    color.b = floor(f / 65536.0); // 256.0 * 256.0
+    color.g = floor(mod(f, 65536.0) / 256.0);
+    color.r = mod(f, 256.0);
     return color / 255.0;
 }
 
@@ -33,5 +34,5 @@ void main()
     lightDistance = lightDistance / far_plane;
 
     // write this as modified depth
-    gl_FragColor = vec4(unpackColor(lightDistance * 256.0 * 256.0 * 256.0), 1.0);
+    gl_FragColor = vec4(floatToColor(lightDistance), 1.0);
 }

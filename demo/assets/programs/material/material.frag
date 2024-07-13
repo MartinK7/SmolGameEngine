@@ -39,10 +39,28 @@ varying vec3 ioNormal;
 varying vec3 ioFragmentPosition;
 varying vec3 ioCameraPosition;
 
+vec3 rgb2hsv(vec3 c)
+{
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+vec3 hsv2rgb(vec3 c)
+{
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
 /// Functions
 vec3 tonemap(vec3 x)
 {
-    #if 0
+    #if 1
     // HDR
     const float gamma = 2.2;
     // reinhard tone mapping
@@ -65,38 +83,33 @@ vec3 tonemap(vec3 x)
     #endif
 }
 
-float packColor(vec3 color) {
-    color *= 255.0;
-    return color.r + color.g * 256.0 + color.b * 256.0 * 256.0;
+float colorToFloat(highp vec3 color)
+{
+    highp vec3 shiftedColor = color * 255.0;
+    return dot(shiftedColor, vec3(1.0, 256.0, 65536.0)) / 16777216.0;
+}
+
+float shadowCalculate(samplerCube cubemapDepthmap, vec3 fragmentToLight)
+{
+    float currentDepth = length(fragmentToLight);
+    float bias = 0.1;
+    float closestDepth = colorToFloat(textureCube(sge_pointLight.cubemapDepthmap, fragmentToLight).rgb) * 100.0;
+    return step(closestDepth, currentDepth - bias);
 }
 
 float shadow()
 {
-    const float far_plane = 20.0;
-
-    vec3 fragmentPositionDepthMap = vec3(1.0);
-
     vec3 fragmentToLight = ioFragmentPosition - sge_pointLight.position;
 
-    // Calcualte shadows
-    float currentDepth = length(fragmentToLight);
-    //float bias = max(0.001 * (1.0 - dot(ioNormal, fragmentToLight)), 0.1);
-    float bias = 0.05;
-    //float bias = 0.0;
-    //
-    float shadow  = 0.0;
-    float samples = 4.0;
-    float offset  = 0.05;
-    for(float x = -offset; x < offset; x += offset / (samples * 0.5)) {
-        for(float y = -offset; y < offset; y += offset / (samples * 0.5)) {
-            for(float z = -offset; z < offset; z += offset / (samples * 0.5)) {
-                float closestDepth = packColor(textureCube(sge_pointLight.cubemapDepthmap, fragmentToLight + vec3(x, y, z)).rgb) / 256.0 / 256.0 / 256.0 * 100.0;
-                if(currentDepth - bias > closestDepth)
-                    shadow += 1.0;
-            }
-        }
-    }
-    shadow /= (samples * samples * samples);
+    float shadow = 0.0;
+    float offset = 0.01;
+
+    shadow += shadowCalculate(sge_pointLight.cubemapDepthmap, fragmentToLight + vec3(0.0, offset, 0.0));
+    shadow += shadowCalculate(sge_pointLight.cubemapDepthmap, fragmentToLight + vec3(0.0, -offset, -offset));
+    shadow += shadowCalculate(sge_pointLight.cubemapDepthmap, fragmentToLight + vec3(offset, -offset, offset));
+    shadow += shadowCalculate(sge_pointLight.cubemapDepthmap, fragmentToLight + vec3(-offset, -offset, offset));
+    shadow /= 4.0;
+
     return clamp(shadow, 0.0, 1.0);
 }
 
@@ -118,8 +131,7 @@ void main()
 
     vec3 color = mix(colorDiffuse, colorGlossy, sge_material.glossy);
 
-    //color = mix(color, vec3(dista()), 1.0);
-    //color = vec3(shadow());
+    color = tonemap(color);
 
     gl_FragColor = vec4(color, 1.0);
 }
